@@ -16,8 +16,6 @@ Volúmenes encuadernados por temáticas a partir de recortes de prensa y otras i
 - Análisis de Sentimientos para comprender el tono y emociones en los textos.
 - Clasificación temática para identificar temas recurrentes y categorizar documentos agrupados en grandes temas generales (política, sociedad, economía, etc.).
 - Identificación de imágenes.
-- Análisis de textos e imágenes para establecer conexiones y relaciones entre personalidades.
-- Análisis de prensa.
 
 ## Corpus
 
@@ -27,3 +25,4 @@ Volúmenes encuadernados por temáticas a partir de recortes de prensa y otras i
 ## Información Adicional
 
 - [Machine Learning Issue](https://github.com/matcom/ML-24-25/issues/1)
+- [Dataset Repo](https://repositoriodigital.ohc.cu/s/repositoriodigital/item-set/46268)
