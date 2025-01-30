@@ -21,7 +21,7 @@ se encuentran la detección de matrículas vehiculares, el análisis de publicid
 según el problema a resolver, y con diferentes niveles de parámetros para ajustar la precisión y velocidad del modelo. En paralelo la extracción de texto
 se ha mejorado con el uso de motores OCR (`Optical Character Recognition`, en español, Reconocimiento óptico de caracteres) como EasyOCR, EfficientOCR y Calamari, que permiten transformar información visual en datos legibles y estructurados (Skelbye & Dannélls, 2021)[2] y proporcionando benchmarks confiables para medir su desempeño (Du et al., 2024) [4].
 
-Para la asociación de imágenes y texto, se han propuesto modelos como MKL-VisITA -**\*\*\*\***NO lo encontre en internet**\*\***
+Para la asociación de imágenes y texto, se han propuesto modelos como MKL-VisITA
 que integran Multi-Kernel Learning y Vision Transformers para mejorar la representación compartida de imágenes y texto, teniendo un
 buen rendimiento con los conjuntos de datos MSCOCO (Microsoft Common Objects in Context) y Flickr30K (dataset de imágenes donde cada imagen tiene cinco frases de referencias etiquetadas por los humanos)(Wang et al.,2024)[3].
 
@@ -50,7 +50,7 @@ El color del papel o color de fondo de las fotografías puede variar entre blanc
 
 **\* IMAGNES DE EJEMPLO**
 
-Las fotografías pueden imágenes de una página completa, fragmentos de una página, pueden estar en una columna de texto, u horizontales a lo largo de la página.Las imágenes pueden ser dibujos, gráficos, mapas, o fotografías de personas, pueden estar rodeadas de algún contorno o marco que las delimite. En su mayoría las imágenes son con forma rectangular, aunque existen casos de imágenes con formas irregulares.
+Las fotografías pueden ser imágenes de una página completa, fragmentos de una página, pueden estar en una columna de texto, u horizontales a lo largo de la página. Las imágenes pueden ser dibujos, gráficos, mapas, o fotografías de personas, pueden estar rodeadas de algún contorno o marco que las delimite. En su mayoría las imágenes son con forma rectangular, aunque existen casos de imágenes con formas irregulares.
 
 **\* IMAGENES DE EJEMPLO**
 
@@ -59,3 +59,24 @@ Debido a que estas fotografías son de documentos antiguos, pueden contener manc
 **\* IMAGENES DE EJEMPLO **
 
 El conjunto de datos pesa alrededor de 60GB en total, es de acceso publico y puede ser descargado desde las Paginas oficiales de la oficina del historiador de la Habana **\*INSERTAR ENLACE**.
+
+## Propuesta de solución
+
+El problema de correspondencia entre imágenes y texto en documentos históricos presenta desafíos en la localización de contenido dentro de las fotografías y su posterior asociación con la información correcta. Para abordar esta problemática, hemos dividido nuestro enfoque en dos subproblemas principales: (1) Detección y extracción de texto y (2) Asociación de imágenes con texto.
+
+### Detención de Imágenes y Textos en las fotografías
+
+Para identificar imágenes y textos en las fotografías decidimos utilizar el modelo de Deep Learning YOLOv11, en su version mas reciente(YOLOv11). YOLO posee la variante OBB(oriented bounding boxes - cuadros delimitadores orientados) que permite cumplir con el requisito de identificar las imágenes según el angulo que ha sido tomada la fotografía, además rotar el texto a su alineación original facilita la integración con los OCR. Permite identificar varias clases diferentes en un mismo análisis, lo que nos facilita no tener dos modelos para identificar texto e imágenes por separado. EL modelo puede refinarse en el futuro añadiendo nuevas fotografías para mejorar las métricas en los escenarios que sean de interés, de igual manera nos permite usar modelos pre entrenados y mejorarlos con nuestros datos. YOLO al ser un modelo de deep learning tiene la capacidad de reconocer patrones complejos en las fotografías, como textos deformados, fondos borrosos o imágenes movidas. YOLO utiliza técnicas de multi-escala (ej: FPN - Feature Pyramid Networks) para detectar objetos pequeños, lo cual puede ser util para columnas estrechas y pie de fotos. Además YOLO tiene varios modelos que permiten ajustar la precisión y velocidad del modelo, en nuestro caso usamos el modelo Nano que permite procesar grandes volúmenes de imágenes en un tiempo relativamente rápido sin tener que usar gpu costosas, lo cual es ideal para el desarrollo de un software con los pesos exportados.
+
+Para el entrenamiento se etiquetaron en total 1221 imágenes, etiquetando 4 clases principales:
+
+- Texto: Todo tipo de textos mecanografiados, encabezados siempre manteniendo su dirección original según el flujo de la página.
+- Imagen: Todo tipo de imágenes, dibujos, gráficos, mapas, fotografías, etc.
+- Escrito a mano: Anotaciones marginales, firmas, fechas, números internos de la página, etc.
+- Caption: Textos que acompañan a las imágenes, como títulos, subtítulos, pies de foto. Esta clase lo hicimos como extra para poder asociar images con sus descripciones. Los captions usualmente son textos cortos y están cerca de las imágenes, en negrita o en cursiva. Para mejorar la selección de captions, decidimos llevar el bounding box desde el texto con un filo pequeño de la imagen.
+
+De las 1221 fotografías etiquetadas obtuvimos: 3492 textos, 794 imágenes, 981 captions y 483 escritos a mano.
+
+### Experimentos en la detección de imágenes y textos en fotografías
+
+Para optimizar los resultados de la detección de imágenes y textos en las fotografías, nuestro primer paso fue ajustar los hiperparametros de YOLO (hyperparameter tuning), se uso una configuración de 30 iteraciones probando distintas configuraciones. El procesamiento duro alrededor de 12 horas usando una maquina virtual de Kaggle, usando dos GPU T4, y 32 GB de RAM. Manteniendo el procesamiento a 1080px que es lo máximo que YOLO puede procesar. 
