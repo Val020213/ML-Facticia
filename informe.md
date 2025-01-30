@@ -80,3 +80,35 @@ De las 1221 fotografías etiquetadas obtuvimos: 3492 textos, 794 imágenes, 981 
 ### Experimentos en la detección de imágenes y textos en fotografías
 
 Para optimizar los resultados de la detección de imágenes y textos en las fotografías, nuestro primer paso fue ajustar los hiperparametros de YOLO (hyperparameter tuning), se uso una configuración de 30 iteraciones probando distintas configuraciones. El procesamiento duro alrededor de 12 horas usando una maquina virtual de Kaggle, usando dos GPU T4, y 32 GB de RAM. Manteniendo el procesamiento a 1080px que es lo máximo que YOLO puede procesar. 
+
+Los resultados fueron los siguientes:
+
+** insertar hypeparametros **
+
+Las métricas al entrenar el modelo con esos hiperparametros fueron:
+
+** INSERTAR RESULTADOS Y EXPLICAR LAS METRICAS POR ARRIBA **
+
+
+** AQUI HABLAR DE LOS RESULTADOS Y ANALISIS CRITICO DE LOS RESULTADOS **
+
+### Otros experimentos
+
+preprocesamiento de las imagenes con escalas de grises y binarización, para mejorar la detección de texto en las imagenes.
+hyperparametrizacion y muestra de los resultados del entrenamiento
+
+### Asociación de imágenes y texto
+
+*** Preprocesamiento ***
+
+*** TESSERACT ***
+
+*** AQUI HABLAR DE LAS METRICAS *** CER Y JACKARD
+
+*** post procesamiento ***
+
+*** CLIP ***
+
+*** AQUI HABLAR DE LOS RESULTADOS Y ANALISIS CRITICO DE LOS RESULTADOS ***
+
+
