@@ -7,7 +7,7 @@ from src.data_format import DataFormat, from_json
 from src.dataset_loader import get_dataset_from_file, clear
 from src.image_processor import crop_image
 
-import json, os
+import os
 
 
 class FullModel:
@@ -28,11 +28,20 @@ class FullModel:
             name="cf_erl",
         )
 
-    def run(self, export_path: str, data_path: str, images: list[str]|None = None, load_mode=False):
+    def run(
+        self,
+        export_path: str,
+        data_path: str,
+        images: list[str] | None = None,
+        load_mode=False,
+    ):
 
         if images is None:
-            images = [x.split('.')[-2] for x in os.listdir(data_path) if x.split('.')[-1] == 'jpg']
-            
+            images = [
+                x.split(".")[-2]
+                for x in os.listdir(data_path)
+                if x.split(".")[-1] == "jpg"
+            ]
 
         if not load_mode:
             for image in images:
@@ -47,26 +56,26 @@ class FullModel:
             crops = from_json(json_file)
 
             self.cropped_images[filename] = crops
-       
 
-    def get_proximity(self, export_path, images:list[str]|None=None):
+    def get_proximity(self, export_path, images: list[str] | None = None):
 
         proximity = {}
-        
+
         if images is None:
             images = os.listdir(export_path)
 
         for image in images:
-            
-            texts = [x.text for x in self.cropped_images[image] if x.type == 0 or x.type == 3]
+
+            texts = [
+                x.text for x in self.cropped_images[image] if x.type == 0 or x.type == 3
+            ]
             image_crops = [x for x in self.cropped_images[image] if x.type == 2]
-            
-            
+
             for crop in image_crops:
-                
+
                 image_path = f"{export_path}/{image}/{crop.filename}.jpg"
                 proximity[crop] = self.clip_model.get_relation(image_path, texts)
-                
+
         return proximity
 
     def associate_bounding_boxes(self):
@@ -79,51 +88,60 @@ class FullModel:
             crop_xywhr = crop.xywhr
 
             if crop.type == 2:
-                images.append({
-                    "filename": crop.filename,
-                    "x": crop_xywhr[0],
-                    "y": crop_xywhr[1],
-                    "w": crop_xywhr[2],
-                    "h": crop_xywhr[3],
-                    "r": crop_xywhr[4]
-                })
+                images.append(
+                    {
+                        "filename": crop.filename,
+                        "x": crop_xywhr[0],
+                        "y": crop_xywhr[1],
+                        "w": crop_xywhr[2],
+                        "h": crop_xywhr[3],
+                        "r": crop_xywhr[4],
+                    }
+                )
             elif crop.type == 0:
-                captions.append({
-                    "filename": crop.filename,
-                    "x": crop_xywhr[0],
-                    "y": crop_xywhr[1],
-                    "w": crop_xywhr[2],
-                    "h": crop_xywhr[3],
-                    "r": crop_xywhr[4]
-                })
-
+                captions.append(
+                    {
+                        "filename": crop.filename,
+                        "x": crop_xywhr[0],
+                        "y": crop_xywhr[1],
+                        "w": crop_xywhr[2],
+                        "h": crop_xywhr[3],
+                        "r": crop_xywhr[4],
+                    }
+                )
 
         for img in images:
-            img_corners = calculate_corners(img['x'], img['y'], img['w'], img['h'], img['r'])
+            img_corners = calculate_corners(
+                img["x"], img["y"], img["w"], img["h"], img["r"]
+            )
             img_midpoints = calculate_midpoints(img_corners)
 
             possible_captions = []
 
             for cap in captions:
-                cap_corners = calculate_corners(cap['x'], cap['y'], cap['w'], cap['h'], cap['r'])
+                cap_corners = calculate_corners(
+                    cap["x"], cap["y"], cap["w"], cap["h"], cap["r"]
+                )
                 cap_midpoints = calculate_midpoints(cap_corners)
 
                 distances = [
-                    calculate_distance(img_midpoints[3], cap_midpoints[0]),  
-                    calculate_distance(img_midpoints[0], cap_midpoints[3]),  
-                    calculate_distance(img_midpoints[2], cap_midpoints[1]),  
-                    calculate_distance(img_midpoints[1], cap_midpoints[2])  
+                    calculate_distance(img_midpoints[3], cap_midpoints[0]),
+                    calculate_distance(img_midpoints[0], cap_midpoints[3]),
+                    calculate_distance(img_midpoints[2], cap_midpoints[1]),
+                    calculate_distance(img_midpoints[1], cap_midpoints[2]),
                 ]
 
                 min_cap_distance = min(distances)
 
                 if min_cap_distance <= max_distance:
-                    possible_captions.append({
-                        'caption': cap['filename'],
-                        'text_caption': cap['text'],
-                        'distance': min_cap_distance
-                    })
+                    possible_captions.append(
+                        {
+                            "caption": cap["filename"],
+                            "text_caption": cap["text"],
+                            "distance": min_cap_distance,
+                        }
+                    )
 
-            associations[img['filename']] = possible_captions
+            associations[img["filename"]] = possible_captions
 
         return associations
