@@ -7,7 +7,7 @@ Clip es un modelo que aprende a asociar imágenes y sus correspondientes descrip
 En el procesamiento de los datos con que se utiliza el modelo se utilizaron dos métricas para la detección de similitud: distancia de Jaccard y **Character Error Rate** (CER). En el primer caso podemos obtener una buena aproximación de que tan fiel es el texto extraído con respecto al texto original, teniendo en cuenta las palabras que aparecen en cada uno con un costo computacional bastante acotado. Después de algunas iteraciones se decidió utilizar CER debido a que para la construcción de los **embeddings** Clip utiliza **Byte Pair Encoding** (BPE) el cual empieza con un vocabulario base de caracteres, mezcla iterativamente los pares más comunes de caracteres o subpalabras para formar nuevas subpalabras y de este modo termina con un vocabulario con un balance entre ser basado en caracteres y en palabras.
 
 
-## Por qué usar Tesseract?
+## Por qué usar Tesseract? -
 
 Tesseract es un modelo actual que implementa técnicas que son parte del Estado del Arte en el campo de la conversión de texto a imagen. Se encuentra preentrenado para datos en español por lo que puede ser utilizado en el contexto de nuestro proyecto sin necesidad de agregar nuevos datos de entrenamiento. Entre sus potencialidades se encuentra que su uso es libre de costo y al ser un proyecto **open source** obtiene grandes beneficios al recibir contribuciones y mejoras por parte de la comunidad. Tesseract recibe actualizaciónes periodicas e incorpora técnicas avanzadas para el OCR como los enfoques basados en **deep-learning**.
 
@@ -19,7 +19,7 @@ Se realizaron varias pruebas para determinar que preprocesamientos daban mejores
 
 en ambos casos los mejores resultados para la media de los procesamientos se obtuvo aplicando solamente una invirsión en los colores y aplicando escala de grises. La combinación de estas técnicas es particularmente útil cuando existen fondos complejos y textos degradados, en nuestro caso, la antiguedad de los documentos los hace propensos a estas características.
 
-## Alternativas a Tesseract
+## Alternativas a Tesseract  
 
 Otros modelos que resolvían el mismo problema de Tesseract fueron considerados, este es el caso de OCRopus que fue uno de los modelos gratuitos encontrados durante la investigación, sin embargo, este no fue utilizado debido al tiempo que tomaría su entrenamiento teniendo en cuenta que sus modelos pre-entrenados no tienen soporte para el idioma español. Existen alternativas como Google Cloud Vision o Amazon Textract que brindan muy buenos resultados pero son de pago.
 

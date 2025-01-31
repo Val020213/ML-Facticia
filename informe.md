@@ -147,25 +147,65 @@ Al igual que con la precision se nota mejor la convergencia de las clasificacion
 
 Mejoro los resultados con respecto a los experimentos a medida que aumenta la confiabilidad.
 
-#### Conclusiones y Propuestas a seguir
+### Asociación de imágenes y texto
+
+#### Tesseract
+
+Tesseract es un modelo que implementa técnicas actuales en el campo de la extracción de texto a partir de imágenes. Este modelo se encuentra preentrenado para datos en español por lo que puede ser utilizado en el contexto de nuestro proyecto sin la necesidad de realizar ningún entrenamiento adicional. Entre sus potencialidades se encuentra que es un proyecto **open source** por lo que obtiene grandes beneficios por parte de la comunidad como contribuciones y mejoras periódicas. Además incorpora técnicas avanzadas para el **Optical Character Recognition**(OCR) como los enfoques basados en **deep-learning**. Otros modelos que resuelven el mismo problema fueron considerados, tal es el caso de OCRopus, modelo gratuito que se decidió no utilizar debido a que no contaba con pre-entrenamientos con datos en español y su entrenamiento sería muy costoso en tiempo y recursos. Existen otras alternativas como Google Cloud Vision o Amazon Textract tienen un muy buen rendimiento, pero, por desgracia, son de pago. Otro candidato fue Kraken, un modelo más robusto que con suficientes datos de entrenamiento podría ser una buena opción pero para el uso de su modelo pre-entrenado se enfoca más en textos históricos manunscritos, además requiere mayor poder de cómputo por lo que implica un esfuerzo adicional sin ninguna ventaja significativa.
+
+#### Preprocesamiento
+
+Para la selección de las técnicas de preprocesamiento a utilizar, realizamos una evaluación con una pequeña cantidad de datos para determinar que conjunto de técnicas de preprocesamiento arrojaba mejor resultado con respecto a datos pertenecientes a nuestro dataset. Para determinar cuál combinación era más eficiente comparamos el caso promedio en una serie de imágenes que contenían textos previamente tagueados (para cada imagen se tiene su texto correspondiente) y utilizamos las siguientes métricas:
+
+- Similitud de Jaccard: Mide la proporción de elementos comunes con respecto al total de elementos únicos en ambos conjuntos. Se calcula como:
+\[
+\text{Similitud de Jaccard} = \frac{|A \cap B|}{|A \cup B|}
+\]
+
+Los resultados obtenidos para esta métrica fueron los siguientes:
+
+![Gráfico de similitud de Jaccard](./informe_images/plots/jaccard%20average%20case%20normalized.png)
+
+- Character Error Rate (CER): Mide la precisión de un sistema de reconocimiento de texto comparando con un texto de referencia, por lo que es muy útil para evaluar la calidad de un OCR. Se calcula como: 
+\[
+\text{CER} = \frac{\text{Edit Distance (Levenshtein)}}{\text{Length of Reference}}
+\]
+
+Los resultados obtenidos para esta métrica fueron los siguientes:
+
+![Gráfico de CER](./informe_images/plots/cer%20average%20case%20normalized.png)
+
+En ambos casos el preprocesamiento que obtuvo mejor resultado consiste en invertir los colores de la imagen y luego llevarla a escala de grises, y por tanto, esta técnica será la que utilizaremos para mejorar el funcionamiento de Tesseract. La combinación de estas técnicas es particularmente útil cuando existen fondos complejos y textos degradados, en nuestro caso, dada la antiguedad de los documentos se vuelven propensos a poseer estas características.
+
+#### Postprocesamiento
+
+Por la naturaleza de los datos, son comunes los casos en que los modelos de reconocimiento de texto suelen tener problemas, además de los casos en que la información extraida está incompleta, lo que podría causar problemas más adelante al utilizarla como contexto. Por este motivo para solucionar este problema decidimos utilizar un **Large Lenguage Model** (LLM). Para una primera evaluación utilizamos las métricas anteriormente empleadas para determinar la proximidad del resultado obtenido utilizando el LLM con el texto extraído obteniendo los siguientes resultados.
+
+![LLM vs solo Tesseract utilizando similitud de Jaccard](./informe_images/plots/llm%20vs%20tesseract%20jaccard.png)
+
+![LLM vs solo Tesseract utilizando CER](./informe_images/plots/llm%20vs%20tesseract%20cer.png)
+
+Como se puede apreciar en la mayoría de los casos la diferencia entre los resultados es poca, a pesar de que los textos extraídos se encuentren a menor distancia del texto original, hay que tener en cuenta que el modelo de lenguaje mejora el texto manteniendo cercana la similitud, por lo que se considera una buena opción para resolver el problema en cuestión.
+
+#### CLIP
+
+Una vez extraídos tanto textos como imágenes hay que enfrentarse a la tarea principal, que es asociar las imágenes en cuestión con los textos. Para ello utilizamos CLIP que es un modelo entrenado sobre un gran conjunto de pares de image-texto. En lugar de predecir etiquetas específicas CLIP aprende un espacio donde las imagenes se encuentran cercanas a sus descripciones de texto y alejadas de descripciones de texto no relacionadas. Esto permite al modelo generalizar para datos que no ha visto nunca sin necesidad de entrenamiento específico para la tarea (**Zero-Shot**). El modelo utiliza redes neuronales, en particular transformers para extraer las *características* visuales y textuales y asignar a cada entrada una ubucación en un espacio de **embeddings** con la misma dimensionalidad. El uso de este modelo reduce considerablemente el tiempo de desarrollo al no requerir entrenamiento previo para la obtención de resultados relevantes, y además establece un puente entre imágenes y texto, lo que lo convierte en un muy buen candidato para la tarea en cuestión.
+
+### Pipeline
+
+- Cargar el modelo con sus respectivos pesos (Entrenar en caso de ser necesario)
+- Utilizar el modelo para extraer y clasificar las 4 clases
+- Preprocesar las imágenes que contienen texto
+- Utilizar tesseract sobre las imágenes que contienen texto
+- Post procesar el texto extraído utilizando el llm
+- Realizar la asociación por cercanía entre *imágenes* y *captions*
+- En los casos en que no se encontraron *captions* cercanos utilizar el modelo de clip con todos los textos extraídos en la fotografía para determinar similitud en cuanto a temática.
+
+### Conclusiones y Propuestas a seguir
 
 Concluimos que el mejor modelo entrenado fue con preprocesamiento de las fotografías, por lo cual recomendamos realizar un ajustes de hiperparametros con más iteraciones para logar una mejor configuración. Además recomendamos probar con otras técnicas de preprocesamiento como las descritas en [https://tolstoy.ai/tolstoy-wall-st-journal-transcribe-newspapers/](https://tolstoy.ai/tolstoy-wall-st-journal-transcribe-newspapers/). También proponemos probar con otros modelos de YOLO
 que requieren mayor capacidad de computo como YOLOv11 OBB M, y analizar que tanto mejorar los resultados.
 Proponemos mejorar y regularizar el dataset con mayor equilibrio de clases para evitar sesgos en el modelo y llegar a mejores resultados.
-
-### Asociación de imágenes y texto
-
-**_ Preprocesamiento _**
-
-**_ TESSERACT _**
-
-**_ AQUI HABLAR DE LAS METRICAS _** CER Y JACKARD
-
-**_ post procesamiento _**
-
-**_ CLIP _**
-
-**_ AQUÍ HABLAR DE LOS RESULTADOS Y ANÁLISIS CRITICO DE LOS RESULTADOS _**
 
 ### Referencias
 
