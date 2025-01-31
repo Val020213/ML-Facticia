@@ -22,7 +22,7 @@ class Node:
         return sum([child.pre_order() for child in self.children], [self.bounding_box])
 
 
-def calculate_corners(self, x, y, w, h, r):
+def calculate_corners(x, y, w, h, r):
     x, y, w, h, r = float(x), float(y), float(w), float(h), float(r)
     r = np.deg2rad(r)
 
@@ -36,21 +36,21 @@ def calculate_corners(self, x, y, w, h, r):
     return rotated_corners
 
 
-def calculate_midpoint(self, p1, p2):
+def calculate_midpoint(p1, p2):
     return (p1 + p2) / 2
 
 
-def calculate_midpoints(self, corners):
+def calculate_midpoints(corners):
     midpoints = [
-        self.calculate_midpoint(corners[0], corners[1]),  # (x1, y1) y (x2, y2)
-        self.calculate_midpoint(corners[0], corners[3]),  # (x1, y1) y (x4, y4)
-        self.calculate_midpoint(corners[1], corners[2]),  # (x2, y2) y (x3, y3)
-        self.calculate_midpoint(corners[3], corners[2]),  # (x4, y4) y (x3, y3)
+        calculate_midpoint(corners[0], corners[1]),  # (x1, y1) y (x2, y2)
+        calculate_midpoint(corners[0], corners[3]),  # (x1, y1) y (x4, y4)
+        calculate_midpoint(corners[1], corners[2]),  # (x2, y2) y (x3, y3)
+        calculate_midpoint(corners[3], corners[2]),  # (x4, y4) y (x3, y3)
     ]
     return midpoints
 
 
-def calculate_distance(self, p1, p2):
+def calculate_distance(p1, p2):
     return np.linalg.norm(p1 - p2)
 
 

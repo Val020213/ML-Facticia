@@ -131,6 +131,7 @@ preprocessing_techniques = [
     [img_grayscale, img_dilation_and_erosion],
     [img_grayscale, img_dilation_and_erosion, img_remove_borders],
     [img_grayscale, img_remove_borders],
+    [],
 ]
 
 
@@ -169,7 +170,7 @@ def extract_text(image, index=1, lenguage="spa", verbose=False):
     if verbose:
         print(text)
 
-    return
+    return text
 
 
 def parametric_search(images):

@@ -18,8 +18,12 @@ def crop_image(yolo_model, export_path: str, data_path: str, image: str):
 
     image_path = f"{data_path}/{image}.jpg"
     filename = image
+    
     preprocess_photography_image(image_path, f"{data_path}/gray_scale.jpg")
+    
     result = yolo_model(f"{data_path}/gray_scale.jpg")
+    
+    os.remove(f"{data_path}/gray_scale.jpg")
 
     obb = result[0].obb
 
