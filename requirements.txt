@@ -1,0 +1,14 @@
+torch
+torchvision
+transformers
+
+numpy
+pandas
+
+nltk
+scikit-learn
+matplotlib
+seaborn
+
+Pillow
+opencv-python

@@ -7,7 +7,7 @@ from src.data_format import DataFormat, from_json
 from src.dataset_loader import get_dataset_from_file, clear
 from src.image_processor import crop_image
 
-import os
+import os, shutil
 
 
 class FullModel:
@@ -44,6 +44,11 @@ class FullModel:
             ]
 
         if not load_mode:
+            
+            #empty the export path
+            for filename in os.listdir(export_path):
+                shutil.rmtree(f"{export_path}/{filename}")
+            
             for image in images:
                 print(f"Cropping image {image}")
                 crop_image(self.yolo_model, export_path, data_path, image)
@@ -76,7 +81,7 @@ class FullModel:
                 image_path = f"{export_path}/{image}/{crop.filename}.jpg"
                 proximity[crop.filename] = self.clip_model.get_relation(image_path, texts)
 
-        return proximity
+        return proximity, texts
 
     def associate_bounding_boxes(self):
         
