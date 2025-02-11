@@ -53,7 +53,7 @@ if image:
         if not file_name.lower().endswith(".jpg"):
             continue
         image_path = os.path.join(target_export_folder, file_name)
-        st.image(image_path, caption=f"Image: {file_name}", use_column_width=True)
+        st.image(image_path, caption=f"Image: {file_name}",  use_container_width=True)
         filename = file_name.split(".")[0]
         ftype = fullModel.get_type(filename)
         if filename in bbox:
