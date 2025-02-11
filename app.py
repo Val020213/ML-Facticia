@@ -5,9 +5,9 @@ import shutil
 from src.full_model import FullModel
 
 st.set_page_config(
-    page_title="Streamlit App",
+    page_title="CF-ERL",
     page_icon="",
-    layout="wide",
+    # layout="wide",
 )
 
 st.write("# Welcome! 👋")
