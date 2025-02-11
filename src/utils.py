@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 
 class BoundingBox:
@@ -40,12 +41,14 @@ def calculate_midpoint(p1, p2):
     return (p1 + p2) / 2
 
 
-def calculate_midpoints(corners):
+def calculate_midpoints(xyxyxyxy):
+    a, b, c, d = xyxyxyxy
+
     midpoints = [
-        calculate_midpoint(corners[0], corners[1]),  # (x1, y1) y (x2, y2)
-        calculate_midpoint(corners[0], corners[3]),  # (x1, y1) y (x4, y4)
-        calculate_midpoint(corners[1], corners[2]),  # (x2, y2) y (x3, y3)
-        calculate_midpoint(corners[3], corners[2]),  # (x4, y4) y (x3, y3)
+        calculate_midpoint(a, b),
+        calculate_midpoint(b, c),
+        calculate_midpoint(c, d),
+        calculate_midpoint(d, a),
     ]
     return midpoints
 
@@ -54,12 +57,14 @@ def calculate_distance(p1, p2):
     return np.linalg.norm(p1 - p2)
 
 
-import cv2
-import os
+# def preprocess_photography_image(image_path, output_path):
+#     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+#     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+#     contrast_image = clahe.apply(image)
+#     cv2.imwrite(output_path, contrast_image)
 
 
 def preprocess_photography_image(image_path, output_path):
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-    contrast_image = clahe.apply(image)
-    cv2.imwrite(output_path, contrast_image)
+    _, image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    cv2.imwrite(output_path, image)

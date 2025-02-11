@@ -1,0 +1,10 @@
+openai
+opencv_python
+opencv_python_headless
+Pillow
+pytesseract
+python-dotenv
+streamlit
+torch
+transformers
+ultralytics

@@ -11,7 +11,7 @@ bbox = fullModel.associate_bounding_boxes()
 for key, value in bbox.items():
     print("key: ", key, " value: ", value)
     
-proximity = fullModel.get_proximity(export_path)
+proximity, _ = fullModel.get_proximity(export_path)
 
 for key, value in proximity.items():
     print("key: ", key, " value: ", value)
