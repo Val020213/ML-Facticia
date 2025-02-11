@@ -10,8 +10,8 @@ st.set_page_config(
     layout="wide",
 )
 
-st.write("# Welcome to Streamlit! 👋")
-
+st.write("# Welcome! 👋")
+st.write("###### This is a Streamlit app from the CF-ERL ML Project.")
 export_path = "./dataset/output"
 target_path = "./dataset/target"
 target_export_folder = export_path + "/image"
@@ -39,32 +39,38 @@ if image:
 
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    st.write("Running model...")
-
-    fullModel.run(export_path, target_path, load_mode=False)
+    with st.spinner("Running model, please wait..."):
+        fullModel.run(export_path, target_path, load_mode=False)
 
     bbox = fullModel.associate_bounding_boxes()
+    print(bbox)
     proximity, texts = fullModel.get_proximity(export_path)
 
-    st.write("Model run successfully!")
+    st.success("Model run successfully!")
+    st.write("## Image Details")
 
     for file_name in os.listdir(target_export_folder):
         if not file_name.lower().endswith(".jpg"):
             continue
         image_path = os.path.join(target_export_folder, file_name)
-        st.write(f"Image: {file_name}")
         st.image(image_path, caption=f"Image: {file_name}", use_column_width=True)
+        filename = file_name.split(".")[0]
+        ftype = fullModel.get_type(filename)
+        if filename in bbox:
+            st.success("Caption Bounding Boxes found!")
+            for i in range(len(bbox[filename])):
+                with st.expander(f"Bounding Box {i} Details", expanded=False):
+                    st.write("*Distance from Image:*", bbox[filename][i]["distance"])
+                    st.write("*Text:*", bbox[filename][i]["text_caption"])
+        elif ftype == 2:
+            st.info("No bounding boxes for this image.")
 
-        if file_name in bbox:
-            for i in range(len(bbox[file_name])):
-                st.write(f"Proximity {i}:", bbox[file_name][i]["distance"])
-                st.write("Caption:\n", bbox[file_name][i]["text_caption"])
-        else:
-            st.write("No bounding boxes for this image.")
+        if filename in proximity:
+            st.success("Proximity text found!")
+            for i in range(len(proximity[filename])):
+                with st.expander(f"Proximity {i} Details", expanded=False):
+                    st.write(f"*Proximity Value {i}:*", proximity[filename][i])
+                    st.write("*Associated Text:*", texts[i])
 
-        if file_name in proximity:
-            for i in range(len(proximity[file_name])):
-                st.write(f"Proximity {i}:", proximity[file_name][i])
-                st.write("Text:\n", texts[i])
-        else:
-            st.write("No proximity data for this image.")
+        elif ftype == 2:
+            st.info("No proximity data for this image.")

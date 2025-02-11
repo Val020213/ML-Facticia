@@ -101,17 +101,13 @@ class FullModel:
 
             for crop in self.cropped_images[image]:
 
-                crop_xywhr = crop.xywhr
+                crop_xyxyxyxy = crop.xyxyxyxy
 
                 if crop.type == 2:
                     images.append(
                         {
                             "filename": crop.filename,
-                            "x": crop_xywhr[0],
-                            "y": crop_xywhr[1],
-                            "w": crop_xywhr[2],
-                            "h": crop_xywhr[3],
-                            "r": crop_xywhr[4],
+                            "xyxyxyxy": crop_xyxyxyxy,
                         }
                     )
                 elif crop.type == 0:
@@ -119,26 +115,22 @@ class FullModel:
                         {
                             "filename": crop.filename,
                             "text": crop.text,
-                            "x": crop_xywhr[0],
-                            "y": crop_xywhr[1],
-                            "w": crop_xywhr[2],
-                            "h": crop_xywhr[3],
-                            "r": crop_xywhr[4],
+                            "xyxyxyxy": crop_xyxyxyxy,
                         }
                     )
 
             for img in images:
-                img_corners = calculate_corners(
-                    img["x"], img["y"], img["w"], img["h"], img["r"]
-                )
+                img_corners = crop_xyxyxyxy
                 img_midpoints = calculate_midpoints(img_corners)
+
+                # check if is correct
+                print("image corners", img_corners)
+                print("mid points", img_midpoints)
 
                 possible_captions = []
 
                 for cap in captions:
-                    cap_corners = calculate_corners(
-                        cap["x"], cap["y"], cap["w"], cap["h"], cap["r"]
-                    )
+                    cap_corners = cap["xyxyxyxy"]
                     cap_midpoints = calculate_midpoints(cap_corners)
 
                     distances = [
@@ -159,7 +151,16 @@ class FullModel:
                                 "distance": min_cap_distance,
                             }
                         )
-
                 associations[img["filename"]] = possible_captions
 
         return associations
+
+    def get_type(self, filename):
+        print("DB - - --  >")
+        for image in self.cropped_images.keys():
+            print(image)
+            for crop in self.cropped_images[image]:
+                print(crop)
+                if crop.filename == filename:
+                    return crop.type
+        return 0
