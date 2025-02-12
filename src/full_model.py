@@ -47,7 +47,10 @@ class FullModel:
 
             # empty the export path
             for filename in os.listdir(export_path):
-                shutil.rmtree(f"{export_path}/{filename}")
+                try:
+                    shutil.rmtree(f"{export_path}/{filename}")
+                except Exception as e:
+                    os.remove(f"{export_path}/{filename}")
 
             for image in images:
                 print(f"Cropping image {image}")

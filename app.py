@@ -37,13 +37,13 @@ if image:
 
     print("Image uploaded successfully!")
 
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
     with st.spinner("Running model, please wait..."):
         fullModel.run(export_path, target_path, load_mode=False)
 
     bbox = fullModel.associate_bounding_boxes()
-    print(bbox)
+
     proximity, texts = fullModel.get_proximity(export_path)
 
     st.success("Model run successfully!")
@@ -53,7 +53,7 @@ if image:
         if not file_name.lower().endswith(".jpg"):
             continue
         image_path = os.path.join(target_export_folder, file_name)
-        st.image(image_path, caption=f"Image: {file_name}", use_column_width=True)
+        st.image(image_path, caption=f"Image: {file_name}",  use_container_width=True)
         filename = file_name.split(".")[0]
         ftype = fullModel.get_type(filename)
         if filename in bbox:

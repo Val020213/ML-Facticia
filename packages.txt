@@ -1,2 +1,5 @@
 tesseract-ocr
-tesseract-ocr-por
+tesseract-ocr-spa
+ffmpeg
+libsm6
+libxext6

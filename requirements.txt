@@ -1,5 +1,4 @@
 openai
-opencv_python
 opencv_python_headless
 Pillow
 pytesseract
