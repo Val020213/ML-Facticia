@@ -4,9 +4,6 @@ import numpy as np
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-API_KEY = "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"
-
 
 class OpenAIModel:
 
@@ -14,7 +11,7 @@ class OpenAIModel:
 
         self.client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
-            api_key=API_KEY,
+            api_key="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",
         )
 
         self.model = "google/gemma-2-9b-it:free"
