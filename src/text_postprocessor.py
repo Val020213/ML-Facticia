@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-API_KEY = os.getenv("API_KEY")
+API_KEY = "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"
 
 
 class OpenAIModel:
@@ -16,35 +16,32 @@ class OpenAIModel:
             base_url="https://openrouter.ai/api/v1",
             api_key=API_KEY,
         )
-        
+
         self.model = "google/gemma-2-9b-it:free"
-        
+
     def fix_text(self, text, verbose=False):
-      
-      query = f"Dado el siguiente texto que fue extraido utilizando tesseract y tiene errores por la deficiente calidad del texto: {text}. \n el texto correcto y sin formato debe ser: "
-      return self._ask_model(query, verbose)
-        
+
+        query = f"Dado el siguiente texto que fue extraido utilizando tesseract y tiene errores por la deficiente calidad del texto: {text}. \n el texto correcto y sin formato debe ser: "
+        return self._ask_model(query, verbose)
+
     def _ask_model(self, query, verbose):
-        
+
         completion = self.client.chat.completions.create(
             model=self.model,
             temperature=0.2,
             max_tokens=len(query.split(" ")) + 50,
-            messages=[  
+            messages=[
                 {
                     "role": "system",
-                    "content": "You are a bot that helps to fix the given text without giving any other feedback, your answers does not have any conversational phrases"
+                    "content": "You are a bot that helps to fix the given text without giving any other feedback, your answers does not have any conversational phrases",
                 },
-                {
-                    "role": "user",
-                    "content": query
-                },
-            ]
+                {"role": "user", "content": query},
+            ],
         )
-        
+
         response = completion.choices[0].message.content
-        
+
         if verbose:
             print(response)
-        
+
         return response

@@ -37,7 +37,7 @@ if image:
 
     print("Image uploaded successfully!")
 
-    st.image(image, caption="Uploaded Image", use_container_width=True)
+    st.image(image, caption="Uploaded Image")
 
     with st.spinner("Running model, please wait..."):
         fullModel.run(export_path, target_path, load_mode=False)
@@ -53,10 +53,13 @@ if image:
         if not file_name.lower().endswith(".jpg"):
             continue
         image_path = os.path.join(target_export_folder, file_name)
-        st.image(image_path, caption=f"Image: {file_name}",  use_container_width=True)
+        st.image(
+            image_path,
+            caption=f"Image: {file_name}",
+        )
         filename = file_name.split(".")[0]
         ftype = fullModel.get_type(filename)
-        if filename in bbox:
+        if filename in bbox and len(bbox[filename]):
             st.success("Caption Bounding Boxes found!")
             for i in range(len(bbox[filename])):
                 with st.expander(f"Bounding Box {i} Details", expanded=False):
