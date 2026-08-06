@@ -2,7 +2,7 @@
 
 Machine-learning pipeline for digitising a historical archive: given a photograph of a page from a 1930s–50s Cuban document collection, it **locates** the images and text blocks on the page, **reads** the text, and **decides which caption belongs to which image**.
 
-Built with the digitisation department of the **Oficina del Historiador de La Habana** (Santo Domingo / San Gerónimo building) as the Machine Learning course project, Computer Science, University of Havana, 2024–2025.
+Built with the digitization department of the **Oficina del Historiador de La Habana** (Santo Domingo / San Gerónimo building) as the Machine Learning course project, Computer Science, University of Havana, 2024–2025.
 
 > 🇪🇸 Full Spanish report — state of the art, every training curve, all references: [`README.es.md`](./README.es.md) · Written report: [`informeML.pdf`](./informeML.pdf)
 
@@ -52,7 +52,7 @@ Captions are typically short, bold or italic, and adjacent to their image; their
 | 2 — data augmentation | 1221 | 3492 / 794 / 483 / 981 | True positives up across every class; background-as-text errors largely gone |
 | 3 — image preprocessing | 1221 | same | **Best model.** Precision and recall converge cleanly at high confidence, with the biggest gain on `text` |
 
-Round 3 preprocesses with **greyscale + CLAHE** (contrast-limited adaptive histogram equalisation). Greyscale is a free win — colour carries no class signal here and dropping it cuts dimensionality — and CLAHE flattens the illumination differences between photographs while sharpening text edges. Gaussian blur and bilateral filtering were also tried. Hyperparameters were tuned per round (100 epochs, 1024 px, batch 16 — see [`training-models/cf_erl/args.yaml`](./training-models/cf_erl/args.yaml)); every curve is in [`README.es.md`](./README.es.md).
+Round 3 preprocesses with **greyscale + CLAHE** (contrast-limited adaptive histogram equalisation). Greyscale is a free win — color carries no class signal here and dropping it cuts dimensionality — and CLAHE flattens the illumination differences between photographs while sharpening text edges. Gaussian blur and bilateral filtering were also tried. Hyperparameters were tuned per round (100 epochs, 1024 px, batch 16 — see [`training-models/cf_erl/args.yaml`](./training-models/cf_erl/args.yaml)); every curve is in [`README.es.md`](./README.es.md).
 
 <p align="center">
   <img src="./informe_images/preprocessing/confusion_matrix_normalized.png" width="45%">
